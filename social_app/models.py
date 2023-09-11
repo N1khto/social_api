@@ -23,9 +23,9 @@ class Profile(models.Model):
     last_name = models.CharField(max_length=255)
     birth_date = models.DateField(blank=True)
     gender = models.CharField(max_length=63, choices=GenderChoices.choices, null=True)
-    avatar = models.ImageField(null=True, upload_to=avatar_image_path)
+    avatar = models.ImageField(null=True, blank=True, upload_to=avatar_image_path)
     bio = models.TextField()
-    followed = models.ManyToManyField(get_user_model(), related_name="followers")
+    followed = models.ManyToManyField(get_user_model(), blank=True, related_name="followers")
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
@@ -47,6 +47,9 @@ class Post(models.Model):
 
     class Meta:
         ordering = ["created_at"]
+
+    def __str__(self):
+        return self.header
 
 
 class Comment(models.Model):
