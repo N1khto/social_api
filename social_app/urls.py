@@ -1,11 +1,12 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from social_app.views import ProfileViewSet
+from social_app.views import ProfileViewSet, PostViewSet
 
 
 router = routers.DefaultRouter()
 router.register("profiles", ProfileViewSet)
+router.register("posts", PostViewSet)
 
 
 urlpatterns = [

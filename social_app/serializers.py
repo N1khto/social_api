@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from social_app.models import Profile
+from social_app.models import Profile, Post, Comment
 from user.serializers import UserSerializer
 
 
@@ -57,3 +57,31 @@ class ProfileDetailSerializer(ProfileSerializer):
             "created_at",
             "followers",
         )
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ("id", "content", "owner", "created_at")
+
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ("id", "header", "content", "owner", "created_at")
+
+
+class PostListSerializer(PostSerializer):
+    class Meta:
+        model = Post
+        fields = ("id", "header", "content", "owner", "num_likes", "num_comments", "created_at")
+
+
+class PostDetailSerializer(PostSerializer):
+    comments = CommentSerializer(many=True, source="post_comments")
+
+    class Meta:
+        model = Post
+        fields = ("id", "header", "content", "owner", "created_at", "num_likes", "comments")
+
+

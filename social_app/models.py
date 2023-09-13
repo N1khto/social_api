@@ -45,11 +45,19 @@ class Post(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="posts")
     created_at = models.TimeField(auto_now_add=True)
 
-    class Meta:
-        ordering = ["created_at"]
+    @property
+    def num_likes(self):
+        return Like.objects.filter(post_id=self.pk).count()
+
+    @property
+    def num_comments(self):
+        return Comment.objects.filter(post_id=self.pk).count()
 
     def __str__(self):
         return self.header
+
+    class Meta:
+        ordering = ["created_at"]
 
 
 class Comment(models.Model):
