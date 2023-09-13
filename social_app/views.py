@@ -12,7 +12,7 @@ class ProfileViewSet(ModelViewSet):
     serializer_class = ProfileSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(owner=self.request.user)
 
     def get_serializer_class(self):
         if self.action == "list":
