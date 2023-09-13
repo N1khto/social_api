@@ -3,9 +3,12 @@ from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
+    profile_id = serializers.IntegerField(source="profile.id", read_only=True)
+    user_id = serializers.IntegerField(source="id")
+
     class Meta:
         model = get_user_model()
-        fields = ("id", "email", "password", "is_staff")
+        fields = ("profile_id", "user_id", "email", "password", "is_staff")
         read_only_fields = ("is_staff",)
         extra_kwargs = {"password": {"write_only": True, "min_length": 5}}
 
