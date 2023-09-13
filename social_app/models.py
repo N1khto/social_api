@@ -56,6 +56,7 @@ class Comment(models.Model):
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="user_comments")
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="post_comments")
     created_at = models.TimeField(auto_now_add=True)
+    content = models.CharField(max_length=511)
 
     class Meta:
         ordering = ["created_at"]
