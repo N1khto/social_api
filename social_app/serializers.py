@@ -32,6 +32,7 @@ class ProfileListSerializer(ProfileSerializer):
             "profile_id",
             "owner_id",
             "full_name",
+            "bio",
             "avatar",
         )
 

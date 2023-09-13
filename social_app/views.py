@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
@@ -22,3 +23,17 @@ class ProfileViewSet(ModelViewSet):
             return ProfileDetailSerializer
 
         return ProfileSerializer
+
+    def get_queryset(self):
+        name = self.request.query_params.get("name")
+        bio = self.request.query_params.get("bio")
+
+        queryset = self.queryset
+
+        if name:
+            queryset = queryset.filter(Q(first_name__icontains=name) | Q(last_name__icontains=name))
+
+        if bio:
+            queryset = queryset.filter(bio__icontains=bio)
+
+        return queryset.distinct()
