@@ -1,7 +1,9 @@
 from django.db.models import Q
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from social_app.models import Profile, Post, Like
@@ -23,6 +25,8 @@ class ProfileViewSet(ModelViewSet):
             return ProfileListSerializer
         if self.action == "retrieve":
             return ProfileDetailSerializer
+        if self.action == "my_page":
+            return ProfileDetailSerializer
         return ProfileSerializer
 
     def get_queryset(self):
@@ -34,6 +38,15 @@ class ProfileViewSet(ModelViewSet):
         if bio:
             queryset = queryset.filter(bio__icontains=bio)
         return queryset.distinct()
+
+    @action(
+        detail=False,
+        methods=["get"]
+    )
+    def my_page(self, request, pk=None):
+        profile = Profile.objects.get(owner_id=self.request.user.pk)
+        serializer = self.get_serializer(profile, many=False)
+        return Response(serializer.data)
 
 
 class PostViewSet(ModelViewSet):
