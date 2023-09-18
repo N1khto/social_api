@@ -1,11 +1,13 @@
 from django.db.models import Q
+from rest_framework.exceptions import ValidationError
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
-from social_app.models import Profile, Post
+from social_app.models import Profile, Post, Like
 from social_app.permissions import IsOwnerOrReadOnly
 from social_app.serializers import ProfileSerializer, ProfileListSerializer, ProfileDetailSerializer, PostSerializer, \
-    PostDetailSerializer, PostListSerializer
+    PostDetailSerializer, PostListSerializer, LikeSerializer
 
 
 class ProfileViewSet(ModelViewSet):
@@ -56,3 +58,20 @@ class PostViewSet(ModelViewSet):
         if content:
             queryset = queryset.filter(Q(header__icontains=content) | Q(content__icontains=content))
         return queryset.distinct()
+
+
+class LikeViewSet(ModelViewSet):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
+
+    def perform_create(self, serializer):
+        post_instance = get_object_or_404(Post, pk=self.request.data["post"])
+        if self.request.data.get("like"):
+            already_liked = Like.objects.filter(post=post_instance, owner=self.request.user).exists()
+            if already_liked:
+                raise ValidationError({"message": "You have already liked this post"})
+            else:
+                serializer.save(post=post_instance, owner=self.request.user)
+        elif self.request.data.get("unlike"):
+            Like.objects.filter(post=post_instance, owner=self.request.user).delete()
