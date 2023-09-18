@@ -25,7 +25,7 @@ class Profile(models.Model):
     gender = models.CharField(max_length=63, choices=GenderChoices.choices, null=True)
     avatar = models.ImageField(null=True, blank=True, upload_to=avatar_image_path)
     bio = models.TextField()
-    followed = models.ManyToManyField(get_user_model(), blank=True, related_name="followers")
+    followed = models.ManyToManyField("self", symmetrical=False, blank=True, related_name="followers")
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property

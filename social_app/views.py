@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.shortcuts import redirect
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
@@ -41,12 +42,23 @@ class ProfileViewSet(ModelViewSet):
 
     @action(
         detail=False,
-        methods=["get"]
+        methods=["get"],
     )
     def my_page(self, request, pk=None):
-        profile = Profile.objects.get(owner_id=self.request.user.pk)
-        serializer = self.get_serializer(profile, many=False)
-        return Response(serializer.data)
+        return redirect(f"/api/social_app/profiles/{str(self.request.user.profile.pk)}")
+
+'''    @action(
+        detail=True,
+        methods=["get", "post"]
+    )
+    def follow(self, request, pk=None):
+        profile = get_object_or_404(Profile, owner_id=self.request.user.pk)
+        serializer = ProfileListSerializer(profile, many=False)
+        if int(pk) in serializer.data.get("followed"):
+            return Response({"message": "xyu"})
+        return Response(serializer.data)'''
+
+
 
 
 class PostViewSet(ModelViewSet):

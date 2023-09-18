@@ -38,8 +38,8 @@ class ProfileListSerializer(ProfileSerializer):
 
 
 class ProfileDetailSerializer(ProfileSerializer):
-    followed = UserSerializer(many=True, read_only=True)
-    followers = ProfileListSerializer(many=True, read_only=True, source="owner.followers")
+    followed = ProfileListSerializer(many=True, read_only=True)
+    followers = ProfileListSerializer(many=True, read_only=True)
 
     class Meta:
         model = Profile
