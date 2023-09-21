@@ -9,8 +9,15 @@ from rest_framework.viewsets import ModelViewSet
 
 from social_app.models import Profile, Post, Like
 from social_app.permissions import IsOwnerOrReadOnly
-from social_app.serializers import ProfileSerializer, ProfileListSerializer, ProfileDetailSerializer, PostSerializer, \
-    PostDetailSerializer, PostListSerializer, LikeSerializer
+from social_app.serializers import (
+    ProfileSerializer,
+    ProfileListSerializer,
+    ProfileDetailSerializer,
+    PostSerializer,
+    PostDetailSerializer,
+    PostListSerializer,
+    LikeSerializer,
+)
 
 
 class ProfileViewSet(ModelViewSet):
@@ -35,7 +42,9 @@ class ProfileViewSet(ModelViewSet):
         bio = self.request.query_params.get("bio")
         queryset = self.queryset
         if name:
-            queryset = queryset.filter(Q(first_name__icontains=name) | Q(last_name__icontains=name))
+            queryset = queryset.filter(
+                Q(first_name__icontains=name) | Q(last_name__icontains=name)
+            )
         if bio:
             queryset = queryset.filter(bio__icontains=bio)
         return queryset.distinct()
@@ -47,10 +56,7 @@ class ProfileViewSet(ModelViewSet):
     def my_page(self, request, pk=None):
         return redirect(f"/api/social_app/profiles/{str(self.request.user.profile.pk)}")
 
-    @action(
-        detail=True,
-        methods=["get"]
-    )
+    @action(detail=True, methods=["get"])
     def follow(self, request, pk=None):
         profile = get_object_or_404(Profile, owner_id=self.request.user.pk)
         if profile:
@@ -66,8 +72,7 @@ class ProfileViewSet(ModelViewSet):
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = (IsAuthenticated,
-                          IsOwnerOrReadOnly)
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -81,9 +86,14 @@ class PostViewSet(ModelViewSet):
 
     def get_queryset(self):
         content = self.request.query_params.get("content")
+        user = self.request.query_params.get("user")
         queryset = self.queryset
         if content:
-            queryset = queryset.filter(Q(header__icontains=content) | Q(content__icontains=content))
+            queryset = queryset.filter(
+                Q(header__icontains=content) | Q(content__icontains=content)
+            )
+        if user:
+            queryset = queryset.filter(owner_id=user)
         return queryset.distinct()
 
 
@@ -95,7 +105,9 @@ class LikeViewSet(ModelViewSet):
     def perform_create(self, serializer):
         post_instance = get_object_or_404(Post, pk=self.request.data["post"])
         if self.request.data.get("like"):
-            already_liked = Like.objects.filter(post=post_instance, owner=self.request.user).exists()
+            already_liked = Like.objects.filter(
+                post=post_instance, owner=self.request.user
+            ).exists()
             if already_liked:
                 raise ValidationError({"message": "You have already liked this post"})
             else:
