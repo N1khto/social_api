@@ -16,6 +16,9 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class PostListSerializer(PostSerializer):
+    num_likes = serializers.IntegerField(read_only=True)
+    num_comments = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Post
         fields = (
@@ -31,6 +34,7 @@ class PostListSerializer(PostSerializer):
 
 class PostDetailSerializer(PostSerializer):
     comments = CommentSerializer(many=True, source="post_comments")
+    num_likes = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Post
@@ -115,5 +119,3 @@ class ProfileDetailSerializer(ProfileSerializer):
             "followers",
             "user_likes"
         )
-
-

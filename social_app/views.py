@@ -1,10 +1,9 @@
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import redirect
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from social_app.models import Profile, Post, Like
@@ -21,7 +20,7 @@ from social_app.serializers import (
 
 
 class ProfileViewSet(ModelViewSet):
-    queryset = Profile.objects.all()
+    queryset = Profile.objects.select_related("owner").prefetch_related("owner__user_likes__post", "followed__owner", "followers__owner")
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
     serializer_class = ProfileSerializer
 
@@ -70,7 +69,7 @@ class ProfileViewSet(ModelViewSet):
 
 
 class PostViewSet(ModelViewSet):
-    queryset = Post.objects.all()
+    queryset = Post.objects.annotate(num_likes=Count("post_likes"), num_comments=Count("post_comments"))
     serializer_class = PostSerializer
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
