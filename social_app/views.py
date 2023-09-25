@@ -8,7 +8,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
-from social_app.models import Profile, Post, Like
+from social_app.models import Profile, Post, Like, Comment
 from social_app.permissions import IsOwnerOrReadOnly
 from social_app.serializers import (
     ProfileSerializer,
@@ -17,7 +17,7 @@ from social_app.serializers import (
     PostSerializer,
     PostDetailSerializer,
     PostListSerializer,
-    LikeSerializer,
+    LikeSerializer, CommentSerializer,
 )
 
 
@@ -161,3 +161,13 @@ class LikeViewSet(ModelViewSet):
             Like.objects.filter(
                 post=post_instance, owner=self.request.user
             ).delete()
+
+
+class CommentViewSet(ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
+
+    def perform_create(self, serializer):
+        post_instance = get_object_or_404(Post, pk=self.request.data["post"])
+        serializer.save(post=post_instance, owner=self.request.user)

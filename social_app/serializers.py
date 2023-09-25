@@ -6,7 +6,8 @@ from social_app.models import Profile, Post, Comment, Like
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ("id", "content", "owner", "created_at")
+        fields = ("id", "post", "content", "owner", "created_at")
+        read_only_fields = ("id", "owner")
 
 
 class PostSerializer(serializers.ModelSerializer):
