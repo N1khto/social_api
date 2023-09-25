@@ -16,8 +16,10 @@ This functionality is built into Python, if you do not have a preference.
 
 From the command line, type:
 
-git clone https://github.com/N1khto/social_api
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py createsuperuser 
-python manage.py runserver
+ - git clone https://github.com/N1khto/social_api
+ - pip install -r requirements.txt
+ - get your own DJANGO_SECRET_KEY (form https://djecrety.ir/) 
+and put it into your own .env file or directly into settings
+ - python manage.py migrate
+ - python manage.py createsuperuser 
+ - python manage.py runserver
