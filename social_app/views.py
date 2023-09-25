@@ -22,7 +22,9 @@ from social_app.serializers import (
 
 
 class ProfileViewSet(ModelViewSet):
-    queryset = Profile.objects.select_related("owner").prefetch_related("owner__user_likes__post", "followed__owner", "followers__owner")
+    queryset = Profile.objects.select_related("owner").prefetch_related(
+        "owner__user_likes__post", "followed__owner", "followers__owner"
+    )
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
     serializer_class = ProfileSerializer
 
@@ -55,12 +57,14 @@ class ProfileViewSet(ModelViewSet):
         methods=["get"],
     )
     def my_page(self, request, pk=None):
-        """ action used retrieve current user's profile """
-        return redirect(f"/api/social_app/profiles/{str(self.request.user.profile.pk)}")
+        """action used retrieve current user's profile"""
+        return redirect(
+            f"/api/social_app/profiles/{str(self.request.user.profile.pk)}"
+        )
 
     @action(detail=True, methods=["get"])
     def follow(self, request, pk=None):
-        """ action used to follow or unfollow user profile """
+        """action used to follow or unfollow user profile"""
         profile = get_object_or_404(Profile, owner_id=self.request.user.pk)
         if profile:
             serializer = ProfileSerializer(profile, many=False)
@@ -90,7 +94,9 @@ class ProfileViewSet(ModelViewSet):
 
 
 class PostViewSet(ModelViewSet):
-    queryset = Post.objects.annotate(num_likes=Count("post_likes"), num_comments=Count("post_comments"))
+    queryset = Post.objects.annotate(
+        num_likes=Count("post_likes"), num_comments=Count("post_comments")
+    )
     serializer_class = PostSerializer
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
@@ -146,8 +152,12 @@ class LikeViewSet(ModelViewSet):
                 post=post_instance, owner=self.request.user
             ).exists()
             if already_liked:
-                raise ValidationError({"message": "You have already liked this post"})
+                raise ValidationError(
+                    {"message": "You have already liked this post"}
+                )
             else:
                 serializer.save(post=post_instance, owner=self.request.user)
         elif self.request.data.get("unlike"):
-            Like.objects.filter(post=post_instance, owner=self.request.user).delete()
+            Like.objects.filter(
+                post=post_instance, owner=self.request.user
+            ).delete()

@@ -92,7 +92,8 @@ class Migration(migrations.Migration):
                 (
                     "avatar",
                     models.ImageField(
-                        null=True, upload_to=social_app.models.avatar_image_path
+                        null=True,
+                        upload_to=social_app.models.avatar_image_path,
                     ),
                 ),
                 ("bio", models.TextField()),

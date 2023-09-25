@@ -57,7 +57,7 @@ class LikeSerializer(serializers.ModelSerializer):
 
 
 class LikeDetailSerializer(LikeSerializer):
-    post = PostSerializer(many=False, read_only= True)
+    post = PostSerializer(many=False, read_only=True)
 
     class Meta:
         model = Like
@@ -117,5 +117,5 @@ class ProfileDetailSerializer(ProfileSerializer):
             "followed",
             "created_at",
             "followers",
-            "user_likes"
+            "user_likes",
         )

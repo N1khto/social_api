@@ -16,14 +16,18 @@ class Migration(migrations.Migration):
             model_name="profile",
             name="avatar",
             field=models.ImageField(
-                blank=True, null=True, upload_to=social_app.models.avatar_image_path
+                blank=True,
+                null=True,
+                upload_to=social_app.models.avatar_image_path,
             ),
         ),
         migrations.AlterField(
             model_name="profile",
             name="followed",
             field=models.ManyToManyField(
-                blank=True, related_name="followers", to=settings.AUTH_USER_MODEL
+                blank=True,
+                related_name="followers",
+                to=settings.AUTH_USER_MODEL,
             ),
         ),
     ]

@@ -24,8 +24,12 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     birth_date = models.DateField(blank=True)
-    gender = models.CharField(max_length=63, choices=GenderChoices.choices, null=True)
-    avatar = models.ImageField(null=True, blank=True, upload_to=avatar_image_path)
+    gender = models.CharField(
+        max_length=63, choices=GenderChoices.choices, null=True
+    )
+    avatar = models.ImageField(
+        null=True, blank=True, upload_to=avatar_image_path
+    )
     bio = models.TextField()
     followed = models.ManyToManyField(
         "self", symmetrical=False, blank=True, related_name="followers"
@@ -60,7 +64,9 @@ class Post(models.Model):
 
 class Comment(models.Model):
     owner = models.ForeignKey(
-        get_user_model(), on_delete=models.CASCADE, related_name="user_comments"
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="user_comments",
     )
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name="post_comments"
@@ -76,4 +82,6 @@ class Like(models.Model):
     owner = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name="user_likes"
     )
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="post_likes")
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="post_likes"
+    )
