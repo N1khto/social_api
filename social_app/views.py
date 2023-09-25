@@ -1,5 +1,7 @@
 from django.db.models import Q, Count
 from django.shortcuts import redirect
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
@@ -53,10 +55,12 @@ class ProfileViewSet(ModelViewSet):
         methods=["get"],
     )
     def my_page(self, request, pk=None):
+        """ action used retrieve current user's profile """
         return redirect(f"/api/social_app/profiles/{str(self.request.user.profile.pk)}")
 
     @action(detail=True, methods=["get"])
     def follow(self, request, pk=None):
+        """ action used to follow or unfollow user profile """
         profile = get_object_or_404(Profile, owner_id=self.request.user.pk)
         if profile:
             serializer = ProfileSerializer(profile, many=False)
@@ -66,6 +70,23 @@ class ProfileViewSet(ModelViewSet):
                 profile.followed.remove(pk)
             profile.save()
             return redirect(f"/api/social_app/profiles/{pk}")
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "name",
+                type=OpenApiTypes.STR,
+                description="Search by first or last name (ex. ?name=peter)",
+            ),
+            OpenApiParameter(
+                "bio",
+                type=OpenApiTypes.STR,
+                description="Search by bio (ex. ?bio=teacher)",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class PostViewSet(ModelViewSet):
@@ -94,6 +115,23 @@ class PostViewSet(ModelViewSet):
         if user:
             queryset = queryset.filter(owner_id=user)
         return queryset.distinct()
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "content",
+                type=OpenApiTypes.STR,
+                description="Search by post content (ex. ?content=pineapples)",
+            ),
+            OpenApiParameter(
+                "user",
+                type=OpenApiTypes.STR,
+                description="Search by user id (ex. ?user=6)",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class LikeViewSet(ModelViewSet):
